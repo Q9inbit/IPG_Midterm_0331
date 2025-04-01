@@ -1,2 +1,28 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Git LFS tracking for large Unity asset files in IPG_ZombieArena_0331
+
+/IPG_ZombieArena_0331/**/*.psd filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.png filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.jpeg filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.tga filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.gif filter=lfs diff=lfs merge=lfs -text
+
+/IPG_ZombieArena_0331/**/*.mp4 filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.mov filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.avi filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.wav filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.ogg filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.mp3 filter=lfs diff=lfs merge=lfs -text
+
+/IPG_ZombieArena_0331/**/*.fbx filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.blend filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.obj filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.3ds filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.dae filter=lfs diff=lfs merge=lfs -text
+
+/IPG_ZombieArena_0331/**/*.unity filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.prefab filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.mat filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.anim filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.controller filter=lfs diff=lfs merge=lfs -text
+/IPG_ZombieArena_0331/**/*.asset filter=lfs diff=lfs merge=lfs -text
