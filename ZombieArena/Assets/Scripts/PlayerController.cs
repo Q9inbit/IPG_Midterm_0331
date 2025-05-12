@@ -23,7 +23,6 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        gameManager = GameManager.Instance;
         rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotation;
 
         audioSource = GetComponent<AudioSource>();
@@ -31,6 +30,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        gameManager = GameManager.Instance;
         fireTimer = fireCD;
     }
 

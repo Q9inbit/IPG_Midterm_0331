@@ -34,12 +34,11 @@ public class GameManager : MonoBehaviour
         //DontDestroyOnLoad(gameObject);
         if (Instance != null && Instance != this)
         {
-            Destroy(this);
+            Destroy(gameObject);
+            return;
         }
-        else
-        {
-            Instance = this;
-        }
+
+        Instance = this;
 
         zombieTypes[ZombieType.Regular] = new ZombieStats(ZombieHealth[0], ZombieSpeed[0], ZombieDamage[0]);
         zombieTypes[ZombieType.Fast] = new ZombieStats(ZombieHealth[1], ZombieSpeed[1], ZombieDamage[1]);
