@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using UnityEngine.Audio;
 
 public class PlayerController : MonoBehaviour
@@ -20,6 +21,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioClip fireSound;
     private AudioSource audioSource;
 
+    [SerializeField] private Transform gunTransform;
+    [SerializeField] private float gunRecoil = 2f;
+    private Vector3 gunDefaultLocalPos;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -32,6 +36,7 @@ public class PlayerController : MonoBehaviour
     {
         gameManager = GameManager.Instance;
         fireTimer = fireCD;
+        gunDefaultLocalPos = gunTransform.localPosition;
     }
 
     void Update()
@@ -75,6 +80,7 @@ public class PlayerController : MonoBehaviour
         bullet.GetComponent<BulletScript>().SetSpeed(bulletTravelSpeed);
 
         audioSource.PlayOneShot(fireSound);
+        StartCoroutine(RecoilGun());
     }
 
     public void TakeDamage(float damage)
@@ -86,4 +92,34 @@ public class PlayerController : MonoBehaviour
             gameManager.GameOver();
         }
     }
+
+    private IEnumerator RecoilGun()
+    {
+        float duration = fireCD / (3f*5f);
+        float halfDuration = duration / 2f;
+        float timer = 0f;
+        Vector3 recoilOffset = Vector3.back * gunRecoil; // Adjust recoil distance as needed
+
+        // Recoil back
+        while (timer < halfDuration)
+        {
+            float t = timer / halfDuration;
+            gunTransform.localPosition = Vector3.Lerp(gunDefaultLocalPos, gunDefaultLocalPos + recoilOffset, t);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        // Return forward
+        timer = 0f;
+        while (timer < halfDuration)
+        {
+            float t = timer / halfDuration;
+            gunTransform.localPosition = Vector3.Lerp(gunDefaultLocalPos + recoilOffset, gunDefaultLocalPos, t);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        gunTransform.localPosition = gunDefaultLocalPos;
+    }
+
 }

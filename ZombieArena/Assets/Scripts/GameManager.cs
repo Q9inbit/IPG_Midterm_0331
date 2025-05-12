@@ -69,8 +69,10 @@ public class GameManager : MonoBehaviour
         Vector3 spawnPosition = Vector3.zero;
         bool validSpawn = false;
         int attempts = 0;
-        int maxAttempts = 10;
+        int maxAttempts = 20;
         float checkRadius = 1f;
+
+        Camera mainCam = Camera.main;
 
         while (!validSpawn && attempts < maxAttempts)
         {
@@ -78,8 +80,14 @@ public class GameManager : MonoBehaviour
             float randomZ = Random.Range(minZ, maxZ);
             spawnPosition = new Vector3(randomX, 0f, randomZ);
 
+            // Check if within camera view
+            Plane[] frustumPlanes = GeometryUtility.CalculateFrustumPlanes(mainCam);
+            Bounds bounds = new Bounds(spawnPosition, Vector3.one * 1.5f); // Slightly expanded bounds
+            bool inView = GeometryUtility.TestPlanesAABB(frustumPlanes, bounds);
+
+            // Check if it's not inside environment and not visible
             Collider[] colliders = Physics.OverlapSphere(spawnPosition, checkRadius);
-            validSpawn = true;
+            validSpawn = !inView;
             foreach (Collider col in colliders)
             {
                 if (col.CompareTag("Environment"))
@@ -104,6 +112,7 @@ public class GameManager : MonoBehaviour
             zombieAI.zombieType = randomType;
         }
     }
+    
 
 
     public ZombieStats GetZombieStats(ZombieType type)

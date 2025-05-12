@@ -14,37 +14,59 @@ public class BulletScript : MonoBehaviour
     [SerializeField] private LayerMask Enemy;
     private float angleOffset;
 
+    private float bulletLifetime = 0f;
+    [SerializeField] private float trackingDuration = 1f;
+
     private Transform target;
 
     private void Start()
     {
-        rayCount = spreadAngle;
+        float snapRadius = 3f; // Distance to snap to nearest enemy if very close
         Transform bestTarget = null;
         float closestDistance = Mathf.Infinity;
 
-
-        for (int i = 0; i < rayCount; i++)
+        // STEP 1: Direct proximity check (snap to enemy if nearby)
+        Collider[] nearbyEnemies = Physics.OverlapSphere(transform.position, snapRadius, Enemy);
+        foreach (Collider enemy in nearbyEnemies)
         {
-            float halfSpread = spreadAngle / 2f;
-            float increment = spreadAngle / (rayCount - 1);
-            angleOffset = -halfSpread + (increment * i);
-
-            Vector3 rayDirection = Quaternion.AngleAxis(angleOffset, Vector3.up) * transform.forward;
-
-            Vector3 rayOrigin = transform.position;
-            rayOrigin -= transform.forward * raycastBackOffset;
-
-            Debug.DrawRay(rayOrigin, rayDirection * rayMaxDistance, Color.red, 2f);
-
-            if (Physics.Raycast(rayOrigin, rayDirection, out RaycastHit hit, rayMaxDistance, Enemy))
+            if (enemy.CompareTag("Enemy"))
             {
-                if (hit.collider.CompareTag("Enemy") && hit.distance < closestDistance)
+                float dist = Vector3.Distance(transform.position, enemy.transform.position);
+                if (dist < closestDistance)
                 {
-                    closestDistance = hit.distance;
-                    bestTarget = hit.collider.transform;
+                    closestDistance = dist;
+                    bestTarget = enemy.transform;
                 }
             }
         }
+
+        // STEP 2: If no nearby enemy, use ray-based target search
+        if (bestTarget == null)
+        {
+            rayCount = spreadAngle;
+            for (int i = 0; i < rayCount; i++)
+            {
+                float halfSpread = spreadAngle / 2f;
+                float increment = spreadAngle / (rayCount - 1);
+                angleOffset = -halfSpread + (increment * i);
+
+                Vector3 rayDirection = Quaternion.AngleAxis(angleOffset, Vector3.up) * transform.forward;
+                Vector3 rayOrigin = transform.position - transform.forward * raycastBackOffset;
+
+                Debug.DrawRay(rayOrigin, rayDirection * rayMaxDistance, Color.red, 2f);
+
+                if (Physics.Raycast(rayOrigin, rayDirection, out RaycastHit hit, rayMaxDistance, Enemy))
+                {
+                    if (hit.collider.CompareTag("Enemy") && hit.distance < closestDistance)
+                    {
+                        closestDistance = hit.distance;
+                        bestTarget = hit.collider.transform;
+                    }
+                }
+            }
+        }
+
+        // STEP 3: Lock target
         if (bestTarget != null)
         {
             target = bestTarget;
@@ -53,14 +75,22 @@ public class BulletScript : MonoBehaviour
 
     private void Update()
     {
-        if (target != null)
+        bulletLifetime += Time.deltaTime;
+
+        if (target != null && bulletLifetime <= trackingDuration)
         {
-            Vector3 targetDirection = (target.position - transform.position).normalized;
-            Vector3 newForward = Vector3.Lerp(transform.forward, targetDirection, trackingStrength * Time.deltaTime).normalized;
+            Vector3 targetDirection = (target.position - transform.position);
+            targetDirection.y = 0f; // Prevent tilting up/down
+            Vector3 newForward = Vector3.Lerp(transform.forward, targetDirection.normalized, trackingStrength * Time.deltaTime).normalized;
             transform.forward = newForward;
         }
-        transform.position += transform.forward * bulletSpeed * Time.deltaTime;
+
+        // Move only on XZ plane, preserve Y
+        Vector3 move = new Vector3(transform.forward.x, 0f, transform.forward.z).normalized * bulletSpeed * Time.deltaTime;
+        transform.position += move;
     }
+
+
 
     private bool hasHit = false;
     private void OnTriggerEnter(Collider other)
