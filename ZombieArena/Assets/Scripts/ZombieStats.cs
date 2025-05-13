@@ -5,11 +5,13 @@ public struct ZombieStats
     public float health;
     public float speed;
     public float damage;
+    public Vector3 scaleOverride;
 
-    public ZombieStats(float health, float speed, float damage)
+    public ZombieStats(float h, float s, float d, Vector3 scale = default)
     {
-        this.health = health;
-        this.speed = speed;
-        this.damage = damage;
+        health = h;
+        speed = s;
+        damage = d;
+        scaleOverride = scale == default ? Vector3.zero : scale;
     }
 }

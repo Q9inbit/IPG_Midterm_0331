@@ -23,7 +23,14 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private Transform gunTransform;
     [SerializeField] private float gunRecoil = 2f;
+
     private Vector3 gunDefaultLocalPos;
+
+    [SerializeField] private Transform muzzleFlashTransform;
+    [SerializeField] private ParticleSystem muzzleFlashPrefab;
+
+    private ZombieHealthBar healthBar;
+    private float maxHealth;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -37,6 +44,8 @@ public class PlayerController : MonoBehaviour
         gameManager = GameManager.Instance;
         fireTimer = fireCD;
         gunDefaultLocalPos = gunTransform.localPosition;
+        maxHealth = health;
+        healthBar = GetComponentInChildren<ZombieHealthBar>();
     }
 
     void Update()
@@ -81,13 +90,18 @@ public class PlayerController : MonoBehaviour
 
         audioSource.PlayOneShot(fireSound);
         StartCoroutine(RecoilGun());
+        Instantiate(muzzleFlashPrefab, muzzleFlashTransform.position, muzzleFlashTransform.rotation);
     }
 
     public void TakeDamage(float damage)
     {
         health -= damage;
+        float value = Mathf.Clamp01(health / maxHealth);
+        healthBar.SetHealthBar(value);
+
         Debug.Log(health);
-        if ((health <= 0))
+
+        if (health <= 0)
         {
             gameManager.GameOver();
         }

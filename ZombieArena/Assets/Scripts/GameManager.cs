@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -29,9 +29,19 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float[] ZombieSpeed = new float[] { 10f, 15f, 5f };
     [SerializeField] private float[] ZombieDamage = new float[] { 1f, 1f, 1f };
 
+    [Header("Blood Moon Settings")]
+    public float bloodMoonStatMultiplier = 1.5f;
+    public float bloodMoonScaleMultiplier = 1.2f;
+    public Material bloodMoonBlinkMaterial;
+    public float bloodMoonBlinkSpeed = 5f;
+    public GameObject redVignetteUI;
+
+    private bool isBloodMoon = false;
+    public bool IsBloodMoon => isBloodMoon;
+
+
     private void Awake()
     {
-        //DontDestroyOnLoad(gameObject);
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -40,9 +50,11 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
 
-        zombieTypes[ZombieType.Regular] = new ZombieStats(ZombieHealth[0], ZombieSpeed[0], ZombieDamage[0]);
-        zombieTypes[ZombieType.Fast] = new ZombieStats(ZombieHealth[1], ZombieSpeed[1], ZombieDamage[1]);
-        zombieTypes[ZombieType.Tank] = new ZombieStats(ZombieHealth[2], ZombieSpeed[2], ZombieDamage[2]);
+        zombieTypes[ZombieType.Regular] = new ZombieStats(ZombieHealth[0], ZombieSpeed[0], ZombieDamage[0], new Vector3(1f, 1f, 1f));
+        zombieTypes[ZombieType.Fast] = new ZombieStats(ZombieHealth[1], ZombieSpeed[1], ZombieDamage[1], new Vector3(0.7f, 1f, 0.7f));
+        zombieTypes[ZombieType.Tank] = new ZombieStats(ZombieHealth[2], ZombieSpeed[2], ZombieDamage[2], new Vector3(1.5f, 1.5f, 1.5f));
+
+
     }
 
     private void Start()
@@ -52,6 +64,10 @@ public class GameManager : MonoBehaviour
         pauseMenu.SetActive(false);
         Time.timeScale = 0;
         StartCoroutine(SpawnZombiesRoutine());
+
+        StartCoroutine(BloodMoonRoutine());
+
+        redVignetteUI.SetActive(false);
     }
 
 
@@ -131,6 +147,26 @@ public class GameManager : MonoBehaviour
         }
         isPaused = (Time.timeScale == 0);
     }
+
+    private IEnumerator BloodMoonRoutine()
+    {
+        while (true)
+        {
+            float waitTime = Random.Range(8f, 25f);
+            yield return new WaitForSeconds(waitTime);
+
+            isBloodMoon = true;
+            if (redVignetteUI != null)
+                redVignetteUI.SetActive(true);
+
+            yield return new WaitForSeconds(10f);
+
+            isBloodMoon = false;
+            if (redVignetteUI != null)
+                redVignetteUI.SetActive(false);
+        }
+    }
+
 
     public void StartGame()
     {
