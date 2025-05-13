@@ -21,11 +21,10 @@ public class BulletScript : MonoBehaviour
 
     private void Start()
     {
-        float snapRadius = 3f; // Distance to snap to nearest enemy if very close
+        float snapRadius = 3f;
         Transform bestTarget = null;
         float closestDistance = Mathf.Infinity;
 
-        // STEP 1: Direct proximity check (snap to enemy if nearby)
         Collider[] nearbyEnemies = Physics.OverlapSphere(transform.position, snapRadius, Enemy);
         foreach (Collider enemy in nearbyEnemies)
         {
@@ -40,7 +39,6 @@ public class BulletScript : MonoBehaviour
             }
         }
 
-        // STEP 2: If no nearby enemy, use ray-based target search
         if (bestTarget == null)
         {
             rayCount = spreadAngle;
@@ -65,8 +63,6 @@ public class BulletScript : MonoBehaviour
                 }
             }
         }
-
-        // STEP 3: Lock target
         if (bestTarget != null)
         {
             target = bestTarget;
@@ -80,12 +76,11 @@ public class BulletScript : MonoBehaviour
         if (target != null && bulletLifetime <= trackingDuration)
         {
             Vector3 targetDirection = (target.position - transform.position);
-            targetDirection.y = 0f; // Prevent tilting up/down
+            targetDirection.y = 0f;
             Vector3 newForward = Vector3.Lerp(transform.forward, targetDirection.normalized, trackingStrength * Time.deltaTime).normalized;
             transform.forward = newForward;
         }
 
-        // Move only on XZ plane, preserve Y
         Vector3 move = new Vector3(transform.forward.x, 0f, transform.forward.z).normalized * bulletSpeed * Time.deltaTime;
         transform.position += move;
     }

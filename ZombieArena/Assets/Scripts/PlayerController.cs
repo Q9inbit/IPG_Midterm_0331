@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     private AudioSource audioSource;
 
     [SerializeField] private Transform gunTransform;
-    [SerializeField] private float gunRecoil = 2f;
+    [SerializeField] private float gunRecoil = 2f;//distance
 
     private Vector3 gunDefaultLocalPos;
 
@@ -112,7 +112,7 @@ public class PlayerController : MonoBehaviour
         float duration = fireCD / (3f*5f);
         float halfDuration = duration / 2f;
         float timer = 0f;
-        Vector3 recoilOffset = Vector3.back * gunRecoil; // Adjust recoil distance as needed
+        Vector3 recoilOffset = Vector3.back * gunRecoil;
 
         // Recoil back
         while (timer < halfDuration)

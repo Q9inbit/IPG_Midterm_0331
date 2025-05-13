@@ -96,12 +96,10 @@ public class GameManager : MonoBehaviour
             float randomZ = Random.Range(minZ, maxZ);
             spawnPosition = new Vector3(randomX, 0f, randomZ);
 
-            // Check if within camera view
             Plane[] frustumPlanes = GeometryUtility.CalculateFrustumPlanes(mainCam);
-            Bounds bounds = new Bounds(spawnPosition, Vector3.one * 1.5f); // Slightly expanded bounds
+            Bounds bounds = new Bounds(spawnPosition, Vector3.one * 1.5f);
             bool inView = GeometryUtility.TestPlanesAABB(frustumPlanes, bounds);
 
-            // Check if it's not inside environment and not visible
             Collider[] colliders = Physics.OverlapSphere(spawnPosition, checkRadius);
             validSpawn = !inView;
             foreach (Collider col in colliders)

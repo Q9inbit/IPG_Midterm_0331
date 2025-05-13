@@ -50,7 +50,7 @@ public class ZombieAIController : MonoBehaviour
 
             case ZombieType.Tank:
                 transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-                transform.position += new Vector3(0f, 0.25f, 0f); // vertical offset for scale
+                transform.position += new Vector3(0f, 0.25f, 0f);
                 break;
 
             default:
@@ -82,17 +82,14 @@ public class ZombieAIController : MonoBehaviour
             {
                 bloodMoonApplied = true;
 
-                // Apply stat boost
                 health *= GameManager.Instance.bloodMoonStatMultiplier;
                 maxHealth = health;
                 speed *= GameManager.Instance.bloodMoonStatMultiplier;
                 agent.speed = speed;
                 damage *= GameManager.Instance.bloodMoonStatMultiplier;
 
-                // Apply scale boost
                 transform.localScale *= GameManager.Instance.bloodMoonScaleMultiplier;
 
-                // Setup blink material
                 if (!materialsInitialized)
                 {
                     zombieRenderers.Clear();
@@ -105,7 +102,7 @@ public class ZombieAIController : MonoBehaviour
                         {
                             originalMaterials.Add(rend.sharedMaterial);
                             originalColors.Add(rend.sharedMaterial.color);
-                            rend.material = new Material(rend.sharedMaterial); // use instance
+                            rend.material = new Material(rend.sharedMaterial);
                             zombieRenderers.Add(rend);
                         }
                     }
@@ -114,7 +111,6 @@ public class ZombieAIController : MonoBehaviour
                 }
             }
 
-            // Blinking effect
             blinkTimer += Time.deltaTime * GameManager.Instance.bloodMoonBlinkSpeed;
             float lerpValue = Mathf.PingPong(blinkTimer, 1f);
             Material blinkMat = GameManager.Instance.bloodMoonBlinkMaterial;
@@ -129,7 +125,6 @@ public class ZombieAIController : MonoBehaviour
         }
         else if (bloodMoonApplied)
         {
-            // Restore materials
             for (int i = 0; i < zombieRenderers.Count; i++)
             {
                 if (zombieRenderers[i] != null)
@@ -137,8 +132,6 @@ public class ZombieAIController : MonoBehaviour
                     zombieRenderers[i].material = originalMaterials[i];
                 }
             }
-
-            // Restore stats
             ZombieStats stats = GameManager.Instance.GetZombieStats(zombieType);
             float healthRatio = health / maxHealth;
             maxHealth = stats.health;
@@ -153,7 +146,6 @@ public class ZombieAIController : MonoBehaviour
             agent.speed = speed;
             damage = stats.damage;
 
-            // Restore scale
             switch (zombieType)
             {
                 case ZombieType.Fast:
