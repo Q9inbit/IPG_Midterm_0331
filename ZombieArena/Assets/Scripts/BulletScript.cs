@@ -19,6 +19,8 @@ public class BulletScript : MonoBehaviour
 
     private Transform target;
 
+    [SerializeField] private GameObject bloodHitFX;
+
     private void Start()
     {
         float snapRadius = 3f;
@@ -50,8 +52,6 @@ public class BulletScript : MonoBehaviour
 
                 Vector3 rayDirection = Quaternion.AngleAxis(angleOffset, Vector3.up) * transform.forward;
                 Vector3 rayOrigin = transform.position - transform.forward * raycastBackOffset;
-
-                Debug.DrawRay(rayOrigin, rayDirection * rayMaxDistance, Color.red, 2f);
 
                 if (Physics.Raycast(rayOrigin, rayDirection, out RaycastHit hit, rayMaxDistance, Enemy))
                 {
@@ -96,6 +96,7 @@ public class BulletScript : MonoBehaviour
             {
                 ZombieAIController zombie = other.GetComponent<ZombieAIController>();
                 zombie.TakeDamage(damage);
+                Instantiate(bloodHitFX, transform.position, Quaternion.LookRotation(-transform.forward));
             }
             hasHit = true;
         }
